@@ -1,0 +1,10 @@
+.env
+env
+node_modules/
+music/
+*.mp3
+*.wav
+*.ogg
+bot_lock.json
+unlock_data.json
+data/
