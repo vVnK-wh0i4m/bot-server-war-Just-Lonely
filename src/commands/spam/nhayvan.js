@@ -3,8 +3,8 @@ const { activeTasks, spamLoop, antiDevTag, antiDevMention, isSpamBlocked, msg, e
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("nhayvan")
-    .setDescription("Spam text from ngon.txt file")
+    .setName("ngon")
+    .setDescription("Nhây văn từ file ngon.txt")
     .addNumberOption((o) => o.setName("delay").setDescription("Delay between batches (seconds, min 0.3)").setRequired(true))
     .addUserOption((o) => o.setName("tag").setDescription("Target user to mention").setRequired(false))
     .addRoleOption((o) => o.setName("role").setDescription("Target role to mention").setRequired(false))

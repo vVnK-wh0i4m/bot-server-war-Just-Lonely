@@ -4,8 +4,8 @@ const logger = require("../../utils/logger");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("fakenhay")
-    .setDescription("Impersonate a user and spam from nhay.txt")
+    .setName("fakengon")
+    .setDescription("Giả mạo user + nhây nhay.txt")
     .addNumberOption((o) => o.setName("delay").setDescription("Delay between batches (seconds)").setRequired(true))
     .addUserOption((o) => o.setName("target").setDescription("The user you want to impersonate").setRequired(false))
     .addRoleOption((o) => o.setName("role").setDescription("Target role to mention").setRequired(false))
