@@ -19,7 +19,7 @@ const client = new Client({
 loadCommands(client);
 loadEvents(client);
 
-const EXEMPT_COMMANDS = new Set(["bot_lock_cmd", "unlock_bot", "check", "devinfo", "help", "anxin", "nhapkey"]);
+const EXEMPT_COMMANDS = new Set(["bot_lock_cmd", "unlock_bot", "check", "devinfo", "help", "anxin", "nhapkey", "keymanager"]);
 
 client.on("interactionCreate", async (interaction) => {
   if (interaction.isChatInputCommand()) {
