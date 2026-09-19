@@ -6,7 +6,7 @@ module.exports = {
     .setName("spam")
     .setDescription("Spam custom text (supports multiline, high speed)")
     .addStringOption((o) => o.setName("content").setDescription("Spam content (multiline supported)").setRequired(true))
-    .addNumberOption((o) => o.setName("delay").setDescription("Delay between batches (seconds, min 0.3)").setRequired(true))
+    .addNumberOption((o) => o.setName("delay").setDescription("Delay giữa các batch (0.01-600s)").setMinValue(0.01).setMaxValue(600).setRequired(true))
     .addUserOption((o) => o.setName("tag").setDescription("Target user to mention").setRequired(false))
     .addRoleOption((o) => o.setName("role").setDescription("Target role to mention").setRequired(false))
     .addIntegerOption((o) => o.setName("sodong").setDescription("Number of messages (empty = infinite)")),
@@ -19,7 +19,7 @@ module.exports = {
     if (activeTasks.has(channelId)) activeTasks.get(channelId).aborted = true;
 
     const rawContent = interaction.options.getString("content");
-    const delay = Math.max(interaction.options.getNumber("delay"), 0.3);
+    const delay = interaction.options.getNumber("delay");
     const tag = antiDevTag(interaction.options.getMember("tag"), interaction);
     const role = interaction.options.getRole("role");
     const sodong = interaction.options.getInteger("sodong") ?? null;

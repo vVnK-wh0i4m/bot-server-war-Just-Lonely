@@ -26,7 +26,7 @@ module.exports = {
       o.setName("kenh").setDescription("Kênh voice muốn vào").addChannelTypes(ChannelType.GuildVoice)
     )
     .addNumberOption((o) =>
-      o.setName("delay").setDescription("Thời gian ở trong kênh (giây, mặc định: 3)")
+      o.setName("delay").setDescription("Thời gian ở trong kênh (0.01-600s)").setMinValue(0.01).setMaxValue(600)
     )
     .addIntegerOption((o) =>
       o.setName("solan").setDescription("Số lần vào/ra (để trống = vô hạn)")
@@ -41,9 +41,9 @@ module.exports = {
 
     if (!kenh) {
       kenh = interaction.member.voice?.channel;
-      if (!kenh) return interaction.followUp("❌ Bạn chưa vào kênh voice nào.");
+      if (!kenh) return interaction.followUp({ content: "❌ Bạn chưa vào kênh voice nào.", ephemeral: true });
     }
-    if (delay < 1) return interaction.followUp("❌ Delay tối thiểu là 1 giây.");
+    if (delay < 0.01) return interaction.followUp({ content: "❌ Delay tối thiểu là 0.01 giây.", ephemeral: true });
 
     if (runningTasks.has(interaction.guild.id)) {
       runningTasks.get(interaction.guild.id).abort();

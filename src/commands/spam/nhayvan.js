@@ -5,7 +5,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("ngon")
     .setDescription("Nhây văn từ file ngon.txt")
-    .addNumberOption((o) => o.setName("delay").setDescription("Delay between batches (seconds, min 0.3)").setRequired(true))
+    .addNumberOption((o) => o.setName("delay").setDescription("Delay giữa các batch (0.01-600s)").setMinValue(0.01).setMaxValue(600).setRequired(true))
     .addUserOption((o) => o.setName("tag").setDescription("Target user to mention").setRequired(false))
     .addRoleOption((o) => o.setName("role").setDescription("Target role to mention").setRequired(false))
     .addIntegerOption((o) => o.setName("sodong").setDescription("Number of lines (empty = infinite)")),
@@ -17,7 +17,7 @@ module.exports = {
     }
     if (activeTasks.has(channelId)) activeTasks.get(channelId).aborted = true;
 
-    const delay = Math.max(interaction.options.getNumber("delay"), 0.3);
+    const delay = interaction.options.getNumber("delay");
     const tag = antiDevTag(interaction.options.getMember("tag"), interaction);
     const role = interaction.options.getRole("role");
     const sodong = interaction.options.getInteger("sodong") ?? null;

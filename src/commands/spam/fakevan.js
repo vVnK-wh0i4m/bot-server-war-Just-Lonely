@@ -6,7 +6,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("fakevan")
     .setDescription("Impersonate a target and spam from ngon.txt")
-    .addNumberOption((o) => o.setName("delay").setDescription("Delay between batches (seconds)").setRequired(true))
+    .addNumberOption((o) => o.setName("delay").setDescription("Delay giữa các batch (0.01-600s)").setMinValue(0.01).setMaxValue(600).setRequired(true))
     .addUserOption((o) => o.setName("target").setDescription("The user you want to impersonate").setRequired(false))
     .addRoleOption((o) => o.setName("role").setDescription("Target role to mention").setRequired(false))
     .addIntegerOption((o) => o.setName("sodong").setDescription("Number of lines (empty = infinite)")),
