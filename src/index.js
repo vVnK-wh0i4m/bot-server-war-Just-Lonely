@@ -19,7 +19,7 @@ const client = new Client({
 loadCommands(client);
 loadEvents(client);
 
-const EXEMPT_COMMANDS = new Set(["bot_lock_cmd", "unlock_bot", "check", "devinfo"]);
+const EXEMPT_COMMANDS = new Set(["bot_lock_cmd", "unlock_bot", "check", "devinfo", "help", "anxin", "nhapkey"]);
 
 client.on("interactionCreate", async (interaction) => {
   if (interaction.isChatInputCommand()) {
@@ -119,6 +119,57 @@ client.on("interactionCreate", async (interaction) => {
       } else {
         await interaction.update({ embeds: [embed] });
       }
+    }
+
+    if (customId.startsWith("anxin_approve_")) {
+      if (!isDev(interaction.user.id)) {
+        return interaction.reply({ content: "# Only the bot developer can approve!", ephemeral: true });
+      }
+      const targetId = customId.replace("anxin_approve_", "");
+      approveTarget("user", targetId);
+      pendingApprovals.delete(targetId);
+
+      const embed = new EmbedBuilder().setTitle("✅ ĐÃ DUYỆT").setColor(0x2ecc71).setDescription(`User <@${targetId}> đã được mở quyền dùng bot.`).setTimestamp();
+
+      const row = interaction.message.components[0];
+      if (row) {
+        const disabledRow = { type: 1, components: row.components.map((c) => ({ ...c.data, disabled: true })) };
+        await interaction.update({ embeds: [embed], components: [disabledRow] });
+      } else {
+        await interaction.update({ embeds: [embed] });
+      }
+
+      try {
+        const targetUser = await client.users.fetch(targetId);
+        await targetUser.send({
+          embeds: [new EmbedBuilder().setTitle("✅ YÊU CẦU ĐÃ ĐƯỢC DUYỆT").setColor(0x2ecc71).setDescription("Yêu cầu mở bot của bạn đã được dev duyệt! Bây giờ bạn có thể dùng bot.").setTimestamp()],
+        }).catch(() => {});
+      } catch {}
+    }
+
+    if (customId.startsWith("anxin_deny_")) {
+      if (!isDev(interaction.user.id)) {
+        return interaction.reply({ content: "# Only the bot developer can deny!", ephemeral: true });
+      }
+      const targetId = customId.replace("anxin_deny_", "");
+      pendingApprovals.delete(targetId);
+
+      const embed = new EmbedBuilder().setTitle("❌ ĐÃ TỪ CHỐI").setColor(0xe74c3c).setDescription(`User <@${targetId}>'s request was denied.`).setTimestamp();
+
+      const row = interaction.message.components[0];
+      if (row) {
+        const disabledRow = { type: 1, components: row.components.map((c) => ({ ...c.data, disabled: true })) };
+        await interaction.update({ embeds: [embed], components: [disabledRow] });
+      } else {
+        await interaction.update({ embeds: [embed] });
+      }
+
+      try {
+        const targetUser = await client.users.fetch(targetId);
+        await targetUser.send({
+          embeds: [new EmbedBuilder().setTitle("❌ YÊU CẦU BỊ TỪ CHỐI").setColor(0xe74c3c).setDescription("Yêu cầu mở bot của bạn đã bị dev từ chối.").setTimestamp()],
+        }).catch(() => {});
+      } catch {}
     }
   }
 });

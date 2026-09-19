@@ -7,4 +7,5 @@ music/
 *.ogg
 bot_lock.json
 unlock_data.json
+bot_keys.json
 data/
