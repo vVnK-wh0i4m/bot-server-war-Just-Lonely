@@ -45,6 +45,6 @@ module.exports = {
       count: 0,
     });
 
-    spamLoop(interaction, delay, targetObj, sodong, "ngon.txt", { mention: mentionStr }).then(() => activeTasks.delete(channelId));
+    spamLoop(interaction, delay, targetObj, sodong, "ngon.txt", { mention: mentionStr, bigText: true }).then(() => activeTasks.delete(channelId));
   },
 };

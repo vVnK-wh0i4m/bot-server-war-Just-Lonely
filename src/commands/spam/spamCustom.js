@@ -61,7 +61,7 @@ module.exports = {
     };
     activeTasks.set(channelId, taskData);
 
-    spamLoop(interaction, delay, targetObj, sodong, "ngon.txt", { content: contentLines, mention: mentionStr }).then(() => {
+    spamLoop(interaction, delay, targetObj, sodong, "ngon.txt", { content: contentLines, mention: mentionStr, bigText: true }).then(() => {
       const task = activeTasks.get(channelId);
       if (task) {
         const duration = Math.floor((Date.now() - task.startTime) / 1000);

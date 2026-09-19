@@ -58,12 +58,13 @@ module.exports = {
       count: 0,
     });
 
-    const lines = readFileLines(getFilePath("ngon.txt"));
-    if (!lines) {
+    const rawLines = readFileLines(getFilePath("ngon.txt"));
+    if (!rawLines) {
       await interaction.channel.send({ embeds: [{ title: "❌ LỖI", description: "Thiếu file ngon.txt", color: 0xe74c3c }] });
       activeTasks.delete(channelId);
       return;
     }
+    const lines = rawLines.map((l) => l.startsWith("#") ? l : `# ${l}`);
 
     const webhook = new WebhookClient({ url: effectiveWebhookUrl });
 

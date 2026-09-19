@@ -225,11 +225,11 @@ function antiDevMention(mentionStr, interaction) {
 }
 
 async function spamLoop(interaction, delay, target, sodong, filename, options = {}) {
-  const { isWebhook = false, content: customContent = null, batchSize: customBatchSize = null, mention = null } = options;
+  const { isWebhook = false, content: customContent = null, batchSize: customBatchSize = null, mention = null, bigText = false } = options;
   const channelId = interaction.channelId;
 
   if (isSpamBlocked(channelId)) {
-    await interaction.channel.send("# ❌ Kênh này đã bị cấm spam!");
+    await interaction.channel.send({ embeds: [{ title: "❌ CẤM SPAM", description: "Kênh này đã bị cấm spam!", color: 0xe74c3c }] });
     return;
   }
 
@@ -238,9 +238,13 @@ async function spamLoop(interaction, delay, target, sodong, filename, options = 
   else { lines = readFileLines(getFilePath(filename)); }
 
   if (!lines || !lines.length) {
-    const errorMsg = customContent ? "Custom content is empty!" : `Missing or empty \`${filename}\``;
-    await interaction.channel.send(`# Error: ${errorMsg}`);
+    const errorMsg = customContent ? "Nội dung spam trống!" : `Thiếu hoặc trống \`${filename}\``;
+    await interaction.channel.send({ embeds: [{ title: "❌ LỖI", description: errorMsg, color: 0xe74c3c }] });
     return;
+  }
+
+  if (bigText) {
+    lines = lines.map((l) => l.startsWith("#") ? l : `# ${l}`);
   }
 
   let sentCount = 0;
