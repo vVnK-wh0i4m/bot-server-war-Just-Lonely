@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { activeTasks, stopAllTasks, stopAllVoice, canUseBot, embedMsg } = require("./shared");
+const { runningTasks: voiceTasks } = require("../voice/shared");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,6 +15,13 @@ module.exports = {
     const stoppedCount = stopAllTasks();
     const voiceDisconnected = stopAllVoice(interaction.client);
 
+    let voiceTasksStopped = 0;
+    for (const [guildId, ac] of voiceTasks) {
+      ac.abort();
+      voiceTasksStopped++;
+    }
+    voiceTasks.clear();
+
     await interaction.reply({
       embeds: [{
         title: "🛑 BOT ĐÃ DỪNG HOÀN TOÀN",
@@ -21,7 +29,7 @@ module.exports = {
         color: 0xe74c3c,
         fields: [
           { name: "Spam tasks", value: `${stoppedCount} đã dừng`, inline: true },
-          { name: "Voice", value: `${voiceDisconnected} kênh đã ngắt`, inline: true },
+          { name: "Voice", value: `${voiceDisconnected + voiceTasksStopped} đã ngắt`, inline: true },
           { name: "Webhook", value: "Đã ngắt", inline: true },
           { name: "Trạng thái", value: "⏸️ Tạm dừng", inline: true },
         ],
