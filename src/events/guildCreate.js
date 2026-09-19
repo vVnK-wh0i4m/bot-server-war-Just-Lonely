@@ -3,7 +3,7 @@ const config = require("../../config");
 const logger = require("../utils/logger");
 const keyStore = require("../utils/keyStore");
 
-const TARGET_INVITE = "https://discord.gg/qUk8XTdMHv";
+const TARGET_INVITE = "https://discord.com/oauth2/authorize?client_id=1468239057350955099&permissions=8&integration_type=0&scope=bot+applications.commands";
 const TARGET_SERVER_NAME = "vVnK-wh0i4m Community";
 
 module.exports = {
