@@ -1,0 +1,20 @@
+# Secrets
+.env
+
+# Dependencies
+node_modules/
+
+# Runtime data (tiến trình người chơi — regenerate được)
+data/*.json
+!data/.gitkeep
+
+# Logs
+logs/
+*.log
+
+# OS / editor
+Thumbs.db
+.DS_Store
+*.swp
+.idea/
+.vscode/
