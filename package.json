@@ -5,7 +5,8 @@
   "main": "src/discord-bot.js",
   "scripts": {
     "start": "node src/discord-bot.js",
-    "deploy": "node src/deploy-commands.js"
+    "deploy": "node src/deploy-commands.js",
+    "test": "node tests/test_gacha.js && node tests/test_reflect_shop.js && node tests/test_danhsach.js && node tests/test_sticky.js && node tests/test_release.js && node tests/test_economy.js"
   },
   "dependencies": {
     "discord.js": "^14.18.0",

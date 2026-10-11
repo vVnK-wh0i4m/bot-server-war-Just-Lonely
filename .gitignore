@@ -1,6 +1,10 @@
 # Secrets
 .env
 
+# Lệnh quản trị nội bộ — không đưa lên repo công khai
+src/commands/dev/
+src/commands/general/dev_only.js
+
 # Dependencies
 node_modules/
 
