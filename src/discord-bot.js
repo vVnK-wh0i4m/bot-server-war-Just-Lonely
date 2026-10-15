@@ -66,8 +66,8 @@ client.on("messageCreate", async (message) => {
 
   if (message.author.bot) return;
 
-  // Đen danh — bot làm ngơ hoàn toàn: không farm, không lệnh, không phản hồi
-  if (access.isBlocked(message.author.id)) return;
+  // Truy cập: blacklist làm ngơ · whitelist đang bật → chỉ người trong danh sách (dev luôn qua)
+  if (!access.canAccess(message.author.id, { dev: devlist.isAllowed(message.author.id) })) return;
 
   // Farm aura thụ động khi chat (+2/45s, 1.5% may mắn +20)
   try {
@@ -178,8 +178,8 @@ client.on("messageCreate", (message) => {
   const COMPONENT_OWNERS = { dev: "dev_only", duatop: "duatop", tronthoat: "tronthoat", aurashop: "aurashop", tuido: "tuido", danhsachloli: "danhsachloli", flex: "flexaura" };
 
 client.on("interactionCreate", async (interaction) => {
-  // Đen danh — chặn MỌI slash/component (trừ dev vẫn còn trong whitelist)
-  if (access.isBlocked(interaction.user.id) && !devlist.isAllowed(interaction.user.id)) {
+  // Truy cập: blacklist/whitelist chặn MỌI slash/component (dev luôn qua)
+  if (!access.canAccess(interaction.user.id, { dev: devlist.isAllowed(interaction.user.id) })) {
     await interaction.reply({ content: "⛔ Bạn không được phép dùng bot.", ephemeral: true }).catch(() => {});
     return;
   }

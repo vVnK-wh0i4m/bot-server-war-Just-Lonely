@@ -18,18 +18,21 @@ const FLAGS = {
 
 const DEFAULT_PERMS = Object.fromEntries(Object.keys(FLAGS).map((f) => [f, true]));
 
-let state = { blacklist: {}, perms: {} };
+// whitelist: bật = CHỈ người trong danh sách được dùng bot (blacklist vẫn thắng trên tất cả)
+let state = { blacklist: {}, perms: {}, whitelist: { enabled: false, users: {} } };
 
 function load() {
   try {
     if (fs.existsSync(FILE)) {
       const parsed = JSON.parse(fs.readFileSync(FILE, "utf8"));
-      state = Object.assign({ blacklist: {}, perms: {} }, parsed);
+      state = Object.assign({ blacklist: {}, perms: {}, whitelist: { enabled: false, users: {} } }, parsed);
     }
   } catch (err) {
     logger.warn(`access load: ${err.message}`);
-    state = { blacklist: {}, perms: {} };
+    state = { blacklist: {}, perms: {}, whitelist: { enabled: false, users: {} } };
   }
+  if (!state.whitelist) state.whitelist = { enabled: false, users: {} };
+  if (!state.whitelist.users) state.whitelist.users = {};
 }
 
 function save() {
@@ -97,9 +100,55 @@ function profile(id) {
     blacklistBy: bl?.by || null,
     blacklistAt: bl?.at || null,
     perms: perms(s),
+    whitelisted: Boolean(state.whitelist.users[s]),
   };
+}
+
+// ---- Whitelist: bật = chỉ người trong danh sách dùng được bot ----
+function whitelistOn() {
+  return Boolean(state.whitelist.enabled);
+}
+
+function inWhitelist(id) {
+  return Boolean(state.whitelist.users[String(id)]);
+}
+
+function setWhitelist(enabled) {
+  state.whitelist.enabled = Boolean(enabled);
+  save();
+}
+
+function addWhitelist(id, byTag) {
+  const s = String(id).trim();
+  if (!/^\d{5,25}$/.test(s) || state.whitelist.users[s]) return false;
+  state.whitelist.users[s] = { by: byTag || "?", at: Date.now() };
+  save();
+  return true;
+}
+
+function removeWhitelist(id) {
+  const s = String(id).trim();
+  if (!state.whitelist.users[s]) return false;
+  delete state.whitelist.users[s];
+  save();
+  return true;
+}
+
+function listWhitelist() {
+  return Object.entries(state.whitelist.users).map(([id, v]) => ({ id, ...v }));
+}
+
+// Có được dùng bot không? blacklist > whitelist(đang bật) > perms — dev luôn qua
+function canAccess(id, { dev = false } = {}) {
+  if (dev) return true;
+  if (isBlocked(id)) return false;
+  if (whitelistOn() && !inWhitelist(id)) return false;
+  return true;
 }
 
 load();
 
-module.exports = { FLAGS, isBlocked, block, unblock, listBlocked, perms, setPerm, canUse, profile };
+module.exports = {
+  FLAGS, isBlocked, block, unblock, listBlocked, perms, setPerm, canUse, profile,
+  whitelistOn, inWhitelist, setWhitelist, addWhitelist, removeWhitelist, listWhitelist, canAccess,
+};
