@@ -6,6 +6,8 @@ const history = require("./utils/history");
 const gate = require("./utils/gate");
 const game = require("./utils/game");
 const aura = require("./utils/aura");
+const access = require("./utils/access");
+const devlist = require("./utils/devlist");
 const { loadCommands, loadEvents } = require("./utils/loader");
 
 const client = new Client({
@@ -48,6 +50,9 @@ client.on("guildDelete", (guild) =>
 // Prefix dài hơn phải xếp trước để "n?nuk3" không bị bắt nhầm bởi "?"
 const PREFIXES = ["n?", "?"];
 
+// Lệnh prefix nào cần quyền nào trong panel dev (mặc định ai cũng có — dev tắt đi được)
+const PREFIX_FLAGS = { "?spam": "spam", "?ngon": "spam", "?nhay": "spam", "?clearchat": "clearchat", "?stop": "stop" };
+
 client.on("messageCreate", async (message) => {
   if (!message.guild) return;
 
@@ -60,6 +65,9 @@ client.on("messageCreate", async (message) => {
   }
 
   if (message.author.bot) return;
+
+  // Đen danh — bot làm ngơ hoàn toàn: không farm, không lệnh, không phản hồi
+  if (access.isBlocked(message.author.id)) return;
 
   // Farm aura thụ động khi chat (+2/45s, 1.5% may mắn +20)
   try {
@@ -91,6 +99,22 @@ client.on("messageCreate", async (message) => {
 
   const command = client.prefixCommands?.get(cmdKey);
   if (!command) return;
+
+  // Quyền theo user — tắt trong panel dev là không dùng được
+  const needFlag = PREFIX_FLAGS[cmdKey];
+  if (needFlag && !access.canUse(message.author.id, needFlag)) {
+    await message.reply("⛔ Bạn không có quyền dùng lệnh này.").catch(() => {});
+    return;
+  }
+  // Chế độ `inf` cần quyền riêng
+  if (
+    (cmdKey === "?ngon" || cmdKey === "?nhay") &&
+    args.some((a) => a.toLowerCase() === "inf") &&
+    !access.canUse(message.author.id, "inf")
+  ) {
+    await message.reply("⛔ Bạn không có quyền chạy chế độ `inf`.").catch(() => {});
+    return;
+  }
 
   // Bắt buộc vào server trước khi dùng bất kỳ lệnh nào (fail-open nếu gate lỗi)
   let gateResult = { ok: true, checked: false };
@@ -154,6 +178,12 @@ client.on("messageCreate", (message) => {
   const COMPONENT_OWNERS = { dev: "dev_only", duatop: "duatop", tronthoat: "tronthoat", aurashop: "aurashop", tuido: "tuido", danhsachloli: "danhsachloli", flex: "flexaura" };
 
 client.on("interactionCreate", async (interaction) => {
+  // Đen danh — chặn MỌI slash/component (trừ dev vẫn còn trong whitelist)
+  if (access.isBlocked(interaction.user.id) && !devlist.isAllowed(interaction.user.id)) {
+    await interaction.reply({ content: "⛔ Bạn không được phép dùng bot.", ephemeral: true }).catch(() => {});
+    return;
+  }
+
   // Nút select trong /help
   if (interaction.isStringSelectMenu() && interaction.customId === "help_select") {
     // Để help.js tự xử lý qua collector, bỏ qua ở đây
